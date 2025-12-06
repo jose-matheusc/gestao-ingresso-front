@@ -19,7 +19,7 @@
 </nav>
 <main class="container">
   <h2 class="section-title">Cadastro de Produtos</h2>
-  <form class="form fade-in" autocomplete="off">
+  <form id="form-produto" class="form fade-in" autocomplete="off">
     <div class="form-row">
       <label for="nome-prod">Nome do Produto</label>
       <input id="nome-prod" type="text" placeholder="Ex: Ingresso VIP" required />
@@ -42,5 +42,32 @@
 <footer>
   © 2025 Sistema de Compras.
 </footer>
+<script>
+  const API_BASE = 'http://localhost:8080/api';
+
+  document.getElementById('form-produto').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const produto = {
+      nome: document.getElementById('nome-prod').value,
+      preco: parseFloat(document.getElementById('preco').value || '0'),
+      categoria: document.getElementById('categoria').value,
+      descricao: document.getElementById('desc').value
+    };
+
+    try {
+      const resp = await fetch(`${API_BASE}/produtos`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(produto)
+      });
+      if (!resp.ok) throw new Error('Erro ao cadastrar produto');
+      alert('Produto cadastrado com sucesso!');
+      e.target.reset();
+    } catch (err) {
+      alert('Não foi possível cadastrar o produto.');
+      console.error(err);
+    }
+  });
+</script>
 </body>
 </html>

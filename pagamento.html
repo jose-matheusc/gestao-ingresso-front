@@ -19,7 +19,7 @@
 </nav>
 <main class="container">
   <h2 class="section-title">Formas de Pagamento</h2>
-  <form class="form fade-in" autocomplete="off">
+  <form id="form-pagamento" class="form fade-in" autocomplete="off">
     <div class="form-row">
       <label for="metodo">Método</label>
       <select id="metodo" class="payment-select">
@@ -32,11 +32,56 @@
       <label for="dados">Dados do Pagamento</label>
       <input id="dados" type="text" placeholder="Ex: número do cartão ou chave Pix" />
     </div>
+    <p class="text-muted">Total a pagar: R$ <span id="valor-total">0,00</span></p>
     <button class="btn accent" type="submit">Pagar</button>
   </form>
 </main>
 <footer>
   © 2025 Sistema de Compras.
 </footer>
+<script>
+  const API_BASE = 'http://localhost:8080/api';
+
+  async function carregarTotal() {
+    try {
+      const resp = await fetch(`${API_BASE}/carrinho/total`);
+      if (!resp.ok) throw new Error('Erro ao buscar total');
+      const total = await resp.json();
+      document.getElementById('valor-total').textContent = Number(total).toFixed(2);
+      return Number(total);
+    } catch (err) {
+      console.error(err);
+      alert('Não foi possível obter o total do carrinho.');
+      return 0;
+    }
+  }
+
+  document.getElementById('form-pagamento').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const metodo = document.getElementById('metodo').value;
+    const dados = document.getElementById('dados').value;
+    const totalTexto = document.getElementById('valor-total').textContent.replace(',', '.');
+    const valorTotal = parseFloat(totalTexto) || 0;
+
+    const pagamento = { metodo, dados, valorTotal };
+
+    try {
+      const resp = await fetch(`${API_BASE}/pagamento`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(pagamento)
+      });
+      if (!resp.ok) throw new Error('Erro no pagamento');
+      const msg = await resp.text();
+      alert(msg || 'Pagamento realizado com sucesso!');
+    } catch (err) {
+      console.error(err);
+      alert('Não foi possível processar o pagamento.');
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', carregarTotal);
+</script>
 </body>
 </html>

@@ -19,7 +19,7 @@
 </nav>
 <main class="container">
   <h2 class="section-title">Cadastro de Clientes</h2>
-  <form class="form fade-in" autocomplete="off">
+  <form id="form-cliente" class="form fade-in" autocomplete="off">
     <div class="form-row">
       <label for="nome">Nome Completo</label>
       <input id="nome" type="text" placeholder="Digite o nome" required />
@@ -42,5 +42,32 @@
 <footer>
   © 2025 Sistema de Compras.
 </footer>
+<script>
+  const API_BASE = 'http://localhost:8080/api';
+
+  document.getElementById('form-cliente').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const cliente = {
+      nome: document.getElementById('nome').value,
+      email: document.getElementById('email').value,
+      telefone: document.getElementById('telefone').value,
+      cpf: document.getElementById('cpf').value
+    };
+
+    try {
+      const resp = await fetch(`${API_BASE}/clientes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cliente)
+      });
+      if (!resp.ok) throw new Error('Erro ao cadastrar');
+      alert('Cliente cadastrado com sucesso!');
+      e.target.reset();
+    } catch (err) {
+      alert('Não foi possível cadastrar o cliente. Verifique se a API está rodando.');
+      console.error(err);
+    }
+  });
+</script>
 </body>
 </html>
