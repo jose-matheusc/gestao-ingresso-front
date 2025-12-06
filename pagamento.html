@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pagamento</title>
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<header>
+  <h1>Gestão de Compras e Ingressos</h1>
+</header>
+<nav aria-label="Navegação principal">
+  <a href="index.html">Home</a>
+  <a href="cadastro_cliente.html">Cadastro Cliente</a>
+  <a href="cadastro_produto.html">Cadastro Produto</a>
+  <a href="carrinho.html">Carrinho</a>
+  <a href="pagamento.html">Pagamento</a>
+</nav>
+<main class="container">
+  <h2 class="section-title">Formas de Pagamento</h2>
+  <form class="form fade-in" autocomplete="off">
+    <div class="form-row">
+      <label for="metodo">Método</label>
+      <select id="metodo" class="payment-select">
+        <option>Cartão de Crédito</option>
+        <option>Pix</option>
+        <option>Boleto</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label for="dados">Dados do Pagamento</label>
+      <input id="dados" type="text" placeholder="Ex: número do cartão ou chave Pix" />
+    </div>
+    <button class="btn accent" type="submit">Pagar</button>
+  </form>
+</main>
+<footer>
+  © 2025 Sistema de Compras.
+</footer>
+</body>
+</html>
