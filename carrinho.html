@@ -11,9 +11,9 @@
   <h1>Gestão de Compras e Ingressos</h1>
 </header>
 <nav aria-label="Navegação principal">
-  <a href="index.html">Home</a>
+  <a href="login.html">Login</a>
   <a href="cadastro_cliente.html">Cadastro Cliente</a>
-  <a href="cadastro_produto.html">Cadastro Produto</a>
+  <a href="index.html">Compra de ingressos</a>
   <a href="carrinho.html">Carrinho</a>
   <a href="pagamento.html">Pagamento</a>
 </nav>
@@ -33,7 +33,24 @@
 <script>
   const API_BASE = 'http://localhost:8080/api';
 
+  function obterUsuarioLogado() {
+    const raw = localStorage.getItem('usuarioLogado');
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch { return null; }
+  }
+
+  function garantirLogin() {
+    const usuario = obterUsuarioLogado();
+    if (!usuario) {
+      alert('Você precisa estar logado para acessar o carrinho.');
+      window.location.href = 'login.html';
+      return false;
+    }
+    return true;
+  }
+
   async function carregarCarrinho() {
+    if (!garantirLogin()) return;
     try {
       const [itensResp, totalResp] = await Promise.all([
         fetch(`${API_BASE}/carrinho`),

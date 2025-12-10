@@ -11,9 +11,9 @@
   <h1>Gestão de Compras e Ingressos</h1>
 </header>
 <nav aria-label="Navegação principal">
-  <a href="index.html">Home</a>
+  <a href="login.html">Login</a>
   <a href="cadastro_cliente.html">Cadastro Cliente</a>
-  <a href="cadastro_produto.html">Cadastro Produto</a>
+  <a href="index.html">Compra de ingressos</a>
   <a href="carrinho.html">Carrinho</a>
   <a href="pagamento.html">Pagamento</a>
 </nav>
@@ -29,6 +29,10 @@
       <input id="email" type="email" placeholder="exemplo@dominio.com" required />
     </div>
     <div class="form-row">
+      <label for="senha">Senha</label>
+      <input id="senha" type="password" placeholder="Crie uma senha" required />
+    </div>
+    <div class="form-row">
       <label for="telefone">Telefone</label>
       <input id="telefone" type="tel" placeholder="(11) 99999-0000" />
     </div>
@@ -38,6 +42,7 @@
     </div>
     <button class="btn accent" type="submit">Cadastrar Cliente</button>
   </form>
+  <p class="text-muted" style="margin-top:16px;">Já possui cadastro? <a href="login.html">Faça login</a>.</p>
 </main>
 <footer>
   © 2025 Sistema de Compras.
@@ -45,11 +50,23 @@
 <script>
   const API_BASE = 'http://localhost:8080/api';
 
+  function salvarUsuarioLogado(cliente) {
+    localStorage.setItem('usuarioLogado', JSON.stringify(cliente));
+  }
+
+  function redirecionarSeLogado() {
+    const usuario = localStorage.getItem('usuarioLogado');
+    if (usuario) {
+      window.location.href = 'index.html';
+    }
+  }
+
   document.getElementById('form-cliente').addEventListener('submit', async (e) => {
     e.preventDefault();
     const cliente = {
       nome: document.getElementById('nome').value,
       email: document.getElementById('email').value,
+      senha: document.getElementById('senha').value,
       telefone: document.getElementById('telefone').value,
       cpf: document.getElementById('cpf').value
     };
@@ -61,13 +78,17 @@
         body: JSON.stringify(cliente)
       });
       if (!resp.ok) throw new Error('Erro ao cadastrar');
-      alert('Cliente cadastrado com sucesso!');
-      e.target.reset();
+      const clienteSalvo = await resp.json().catch(() => cliente);
+      salvarUsuarioLogado(clienteSalvo);
+      alert('Cliente cadastrado com sucesso! Você já está logado.');
+      window.location.href = 'index.html';
     } catch (err) {
       alert('Não foi possível cadastrar o cliente. Verifique se a API está rodando.');
       console.error(err);
     }
   });
+
+  document.addEventListener('DOMContentLoaded', redirecionarSeLogado);
 </script>
 </body>
 </html>

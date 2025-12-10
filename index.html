@@ -11,16 +11,15 @@
   <h1>Gestão de Compras e Ingressos</h1>
 </header>
 <nav aria-label="Navegação principal">
-  <a href="index.html">Home</a>
+  <a href="login.html">Login</a>
   <a href="cadastro_cliente.html">Cadastro Cliente</a>
-  <a href="cadastro_produto.html">Cadastro Produto</a>
+  <a href="index.html">Compra de ingressos</a>
   <a href="carrinho.html">Carrinho</a>
   <a href="pagamento.html">Pagamento</a>
 </nav>
 <main class="container">
   <h2 class="section-title">Produtos Disponíveis</h2>
   <div id="products" class="products-grid fade-in">
-    <!-- Será preenchido via JS chamando a API /api/produtos -->
   </div>
 </main>
 <footer>
@@ -29,7 +28,24 @@
 <script>
   const API_BASE = 'http://localhost:8080/api';
 
+  function obterUsuarioLogado() {
+    const raw = localStorage.getItem('usuarioLogado');
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch { return null; }
+  }
+
+  function garantirLogin() {
+    const usuario = obterUsuarioLogado();
+    if (!usuario) {
+      alert('Você precisa estar logado para acessar a loja.');
+      window.location.href = 'login.html';
+      return false;
+    }
+    return true;
+  }
+
   async function carregarProdutos() {
+    if (!garantirLogin()) return;
     try {
       const resp = await fetch(`${API_BASE}/produtos`);
       if (!resp.ok) throw new Error('Erro ao buscar produtos');
@@ -57,6 +73,7 @@
   }
 
   async function adicionarAoCarrinho(produto) {
+    if (!garantirLogin()) return;
     try {
       const item = {
         produtoId: produto.id,

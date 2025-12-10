@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Login</title>
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<header>
+  <h1>Gestão de Compras e Ingressos</h1>
+</header>
+<nav aria-label="Navegação principal">
+  <a href="login.html">Login</a>
+  <a href="cadastro_cliente.html">Cadastro Cliente</a>
+  <a href="index.html">Compra de ingressos</a>
+  <a href="carrinho.html">Carrinho</a>
+  <a href="pagamento.html">Pagamento</a>
+  <button id="btn-logout" class="btn" style="margin-left: auto;">Sair</button>
+</nav>
+<main class="container">
+  <h2 class="section-title">Login</h2>
+  <form id="form-login" class="form fade-in" autocomplete="off">
+    <div class="form-row">
+      <label for="email-login">Email</label>
+      <input id="email-login" type="email" placeholder="exemplo@dominio.com" required />
+    </div>
+    <div class="form-row">
+      <label for="senha-login">Senha</label>
+      <input id="senha-login" type="password" placeholder="Digite sua senha" required />
+    </div>
+    <button class="btn accent" type="submit">Entrar</button>
+  </form>
+</main>
+<footer>
+  © 2025 Sistema de Compras.
+</footer>
+<script>
+  const API_BASE = 'http://localhost:8080/api';
+
+  function salvarUsuarioLogado(cliente) {
+    localStorage.setItem('usuarioLogado', JSON.stringify(cliente));
+  }
+
+  function logout() {
+    localStorage.removeItem('usuarioLogado');
+    alert('Você saiu da sua conta.');
+    window.location.href = 'login.html';
+  }
+
+  function redirecionarSeJaLogado() {
+    const usuario = localStorage.getItem('usuarioLogado');
+    if (usuario) {
+      console.log('Usuário já logado:', JSON.parse(usuario));
+    }
+  }
+
+  document.getElementById('form-login').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email-login').value;
+    const senha = document.getElementById('senha-login').value;
+
+    try {
+      const resp = await fetch(`${API_BASE}/clientes/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, senha })
+      });
+
+      if (!resp.ok) {
+        if (resp.status === 401) {
+          alert('Email ou senha inválidos.');
+        } else {
+          alert('Erro ao fazer login.');
+        }
+        return;
+      }
+
+      const cliente = await resp.json();
+      salvarUsuarioLogado(cliente);
+      alert(`Bem-vindo, ${cliente.nome || 'cliente'}!`);
+      window.location.href = 'index.html';
+    } catch (err) {
+      console.error(err);
+      alert('Não foi possível conectar ao servidor.');
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    redirecionarSeJaLogado();
+    const btnLogout = document.getElementById('btn-logout');
+    if (btnLogout) {
+      btnLogout.addEventListener('click', logout);
+    }
+  });
+</script>
+</body>
+</html>
